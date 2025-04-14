@@ -100,3 +100,7 @@ homelab/
 
 Maintained by **Marc Montecalvo**  
 Repo: [github.com/marcmontecalvo/homelab](https://github.com/marcmontecalvo/homelab)
+
+
+
+curl -s https://raw.githubusercontent.com/marcmontecalvo/homelab/refs/heads/main/bootstrap/optional-iso-server-setup.sh | bash
