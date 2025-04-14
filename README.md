@@ -104,3 +104,4 @@ Repo: [github.com/marcmontecalvo/homelab](https://github.com/marcmontecalvo/home
 
 
 curl -s https://raw.githubusercontent.com/marcmontecalvo/homelab/refs/heads/main/bootstrap/optional-iso-server-setup.sh | bash
+curl -s https://raw.githubusercontent.com/marcmontecalvo/homelab/refs/heads/main/bootstrap/networking/01-OPNsense-firewall-rules.sh | bash

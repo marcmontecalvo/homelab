@@ -33,4 +33,4 @@ EOF
 # Reload pf to make sure the new rules take effect
 pfctl -f /etc/pf.conf
 
-echo "✅ OPNsense firewall rules for VLAN access and ISO server are now loaded."
+echo "✅ OPNsense firewall rules for VLAN access and ISO server are now loaded.  Now run the bootstrap/optional-iso-server-setup.sh script."
