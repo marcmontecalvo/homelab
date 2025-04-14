@@ -1,142 +1,102 @@
-# homelabHomelab Infrastructure Overview
+# 🏠 Homelab Infrastructure
 
-Welcome to the marcmontecalvo/homelab repository. This repo serves as a source of truth for automating, documenting, and managing a fully self-hosted homelab environment. The system is designed for flexibility, performance, and fun projects like self-hosted media, home automation, and secure remote access.
+A complete overview and configuration baseline for a self-hosted homelab using Proxmox, OPNsense, VLAN segmentation, containerization, and more.
 
-:house: Homelab Goals
+---
 
-Infrastructure as Code - Reproducible environment config using scripts and GitHub.
+## 🧠 Overview
 
-Isolated VLANs - Network segmentation for security and service organization.
+This repo contains all bootstrap scripts, infrastructure plans, container setup references, and networking configs for a multi-node, VLAN-segmented homelab setup.
 
-Self-hosted Everything - Media streaming, automation, personal cloud.
+---
 
-Security - Proper firewall segmentation, proxy authentication, and access control.
+## 🔧 Core Infrastructure
 
-Scalability - Easy to add more nodes and services.
+| Component               | Description                                      |
+| ----------------------- | ------------------------------------------------ |
+| **Proxmox (Main)**      | `verahost` – primary hypervisor, VLAN aware      |
+| **Proxmox (Secondary)** | `proxmox` – legacy system, being migrated        |
+| **N100 NUC**            | Dedicated to Plex with GPU passthrough           |
+| **NAS (DS1520+)**       | NFS shares for media, torrents, configs, backups |
+| **OPNsense**            | Virtualized firewall & router, VLAN aware        |
 
-:hammer_and_wrench: Core Technologies
+---
 
-Tech
+## 🧱 VLAN Design
 
-Purpose
+| VLAN Tag | CIDR            | Purpose               | Alias             |
+| -------- | --------------- | --------------------- | ----------------- |
+| 20       | `10.10.20.0/24` | IoT Automation        | `iot-automation`  |
+| 30       | `10.10.30.0/24` | Media Streaming       | `media-streaming` |
+| 40       | `10.10.40.0/24` | Infrastructure        | `infra-services`  |
+| 50       | `10.10.50.0/24` | Media Downloads       | `media-download`  |
+| 60       | `10.10.60.0/24` | DMZ / Public          | `dmz-public`      |
+| 99       | `10.10.99.0/24` | Admin / Firewall MGMT | `infra-core`      |
 
-Proxmox VE
+---
 
-Virtualization and container orchestration
+## 🎯 Goals
 
-OPNsense
+- ✅ Migrate Audiobookshelf to new host
+- ✅ Migrate NPM container and reconfigure domain access
+- ⬜ Add legacy Proxmox server (`proxmox`) as node to cluster
+- ⬜ Backup & restore Home Assistant post-node join
+- ⬜ Create Docker LXC/VM for Arr stack + QBit + NordVPN
+- ⬜ Add Nextcloud container
+- ⬜ Setup Minecraft servers with Velocity proxy + Bedrock support
+- ⬜ Configure Plex passthrough on N100 node
+- ⬜ Deploy Vaultwarden + Authentik for SSO / access control
+- ⬜ Build secure, SSO-gated homelab dashboard (homepage)
 
-Firewall, VLANs, DHCP, gateway management
+---
 
-Docker
+## 🚀 Setup Scripts
 
-Application hosting with Portainer
+**🔒 Firewall Rules (Paste-safe or GitHub method):**
 
-NGINX Proxy Manager (NPM)
-
-Reverse proxy with SSL management
-
-Synology NAS
-
-NFS storage for backups and media
-
-GitHub
-
-Script + configuration source control
-
-:file_folder: Repository Structure
-
-.
-├── bootstrap/                # Initial provisioning scripts
-│   └── setup-firewall-rules.sh   # Firewall setup for internal VLANs
-├── containers/              # Container setup scripts (TBD)
-├── backups/                 # Backup/restore tools (TBD)
-├── networking/              # Network/VLAN mapping and info (TBD)
-├── README.md                # This file
-
-:satellite: Network Design
-
-VLAN ID
-
-Purpose
-
-Subnet
-
-Notes
-
-20
-
-IoT Automation
-
-10.10.20.0/24
-
-Home Assistant, Zigbee, etc.
-
-30
-
-Media Streaming
-
-10.10.30.0/24
-
-Plex, Audiobookshelf, etc.
-
-40
-
-Infra Services
-
-10.10.40.0/24
-
-NPM, Portainer, DNS, etc.
-
-50
-
-Media Download
-
-10.10.50.0/24
-
-Sonarr, Radarr, qBittorrent
-
-60
-
-DMZ / Public-facing
-
-10.10.60.0/24
-
-Reverse proxy or isolated web
-
-99
-
-LAN (Mgmt)
-
-10.10.99.0/24
-
-Firewall, Proxmox mgmt
-
-:lock: Security Practices
-
-VLAN segmentation limits lateral movement
-
-setup-firewall-rules.sh opens only required access to the OPNsense firewall
-
-NGINX Proxy Manager with Let's Encrypt secures external access
-
-Vaultwarden and Authentik planned for secrets and identity
-
-:rocket: Setup Guide (Quick Start)
-
-# On OPNsense (after initial shell access)
+```bash
+# One-liner to run from OPNsense terminal
 curl -s https://raw.githubusercontent.com/marcmontecalvo/homelab/main/bootstrap/setup-firewall-rules.sh | sh
+```
 
-:bookmark_tabs: Future Plans
+Or clone this repo and run manually from shell.
 
+---
 
+## 📁 Folder Structure
 
-:handshake: Contributions
+```text
+homelab/
+├── bootstrap/               # One-time setup and security scripts
+│   └── setup-firewall-rules.sh
+├── containers/              # App-specific bootstrap configs
+├── backups/                 # Notes about backup strategy
+├── networking/              # VLAN maps, static IP plans, DHCP config
+└── README.md                # You are here
+```
 
-This is a personal project, but ideas and feedback are always welcome!
+---
 
-:memo: License
+## 💡 Notes
 
-This repository is for personal homelab use and shared for educational purposes. Use at your own discretion.
+- All internal static IPs are assigned in the `.1 - .99` range.
+- DHCP pools start from `.100` upward per subnet.
+- All traffic between VLANs is explicitly controlled by OPNsense firewall rules.
+- `.local` hostnames are avoided in favor of FQDNs managed via NPM.
+- Public access services are routed via NGINX Proxy Manager using Let's Encrypt certs.
 
-Maintained by @marcmontecalvo
+---
+
+## 📌 To-Do Enhancements
+
+- [ ] Add markdown diagrams (network flow, storage layout)
+- [ ] Setup GitHub Actions to test new config scripts
+- [ ] Create docker-compose samples for each app
+- [ ] Auto-detect and configure VLAN IPs in bootstrap
+
+---
+
+## 🙌 Credits
+
+Maintained by **Marc Montecalvo**  
+Repo: [github.com/marcmontecalvo/homelab](https://github.com/marcmontecalvo/homelab)
